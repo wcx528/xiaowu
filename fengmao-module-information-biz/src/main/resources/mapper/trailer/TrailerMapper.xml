@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fmyd888.fengmao.module.information.dal.mysql.trailer.TrailerMapper">
+
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <select id="selectPageByKeyword"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.trailer.vo.TrailerRespVO">
+        SELECT t1.*, t2.name as companyName,t3.customer_name as outCompanyName
+        FROM fm_trailer t1
+        LEFT JOIN system_dept t2 ON t2.id = t1.company_id AND t2.deleted = 0
+        LEFT JOIN fm_customer t3 ON t3.id = t1.out_company_id  AND t3.deleted = 0
+        WHERE t1.deleted = 0
+
+            <if test="pageReqVO.keyword != null and pageReqVO.keyword != ''">
+                AND (
+                t1.vehicle_trailer_no LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.vehicle_iden_code LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.vehicle_color LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.vehicle_mode LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.tank_type LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.manufacturer_name LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.tyrenumber LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.equipmentmass LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.totalmass LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.verificationmass LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.outside LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.innerside LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.body_reporttime LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.use_nature LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.transporttime LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.driving_date LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.original_price LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.user_years LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.residual_rate LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.tank_type_name LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.trailer_code LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.trailer_weight LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.status LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.remark LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.creator LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.create_time LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.updater LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.update_time LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t2.name LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t3.customer_name LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.violation_count LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.deactivation_date LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.scrap_date LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.process_url LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.approval_time LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.approval_status LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.is_standby_trailer LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.parking_position LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.standby_trailer_status LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.replaced_trailer LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.vehicle_frame LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                )
+            </if>
+            <if test="pageReqVO.trailerBrand != null and pageReqVO.trailerBrand != ''">
+                AND t1.trailer_brand = #{pageReqVO.trailerBrand}
+            </if>
+            <if test="pageReqVO.companyId != null and pageReqVO.companyId != ''">
+                AND t1.company_id = #{pageReqVO.companyId}
+            </if>
+        <if test="pageReqVO.vehicleTrailerNo != null and pageReqVO.vehicleTrailerNo != ''">
+            AND t1.vehicle_trailer_no LIKE CONCAT('%', #{pageReqVO.vehicleTrailerNo}, '%')
+        </if>
+        <if test="pageReqVO.vehicleColor != null and pageReqVO.vehicleColor != ''">
+                AND t1.vehicle_color = #{pageReqVO.vehicleColor}
+            </if>
+            <if test="pageReqVO.tankType != null and pageReqVO.tankType != ''">
+                AND t1.tank_type = #{pageReqVO.tankType}
+            </if>
+            <if test="pageReqVO.vehicleType != null and pageReqVO.vehicleType != ''">
+                AND t1.vehicle_type = #{pageReqVO.vehicleType}
+            </if>
+            <if test="pageReqVO.trailerCode != null and pageReqVO.trailerCode != ''">
+                AND t1.trailer_code LIKE CONCAT('%', #{pageReqVO.trailerCode}, '%')
+            </if>
+            <if test="pageReqVO.certificatTime != null and pageReqVO.certificatTime.size() > 0">
+                and t1.certificat_time BETWEEN
+                <foreach collection="pageReqVO.certificatTime" item="time" separator=" AND ">
+                    #{time}
+                </foreach>
+            </if>
+            <if test="pageReqVO.vehicleIdenCode != null and pageReqVO.vehicleIdenCode != ''">
+                AND t1.vehicle_iden_code = #{pageReqVO.vehicleIdenCode}
+            </if>
+            <if test="pageReqVO.vehicleMode != null and pageReqVO.vehicleMode != ''">
+                AND t1.vehicle_mode = #{pageReqVO.vehicleMode}
+            </if>
+            <if test="pageReqVO.manufacturerName != null and pageReqVO.manufacturerName != ''">
+                AND t1.manufacturer_name = #{pageReqVO.manufacturerName}
+            </if>
+            <if test="pageReqVO.tyrenumber != null">
+                AND t1.tyrenumber = #{pageReqVO.tyrenumber}
+            </if>
+            <if test="pageReqVO.equipmentmass != null and pageReqVO.equipmentmass != ''">
+                AND t1.equipmentmass = #{pageReqVO.equipmentmass}
+            </if>
+            <if test="pageReqVO.totalmass != null and pageReqVO.totalmass != ''">
+                AND t1.totalmass = #{pageReqVO.totalmass}
+            </if>
+            <if test="pageReqVO.verificationmass != null and pageReqVO.verificationmass != ''">
+                AND t1.verificationmass = #{pageReqVO.verificationmass}
+            </if>
+            <if test="pageReqVO.outside != null and pageReqVO.outside != ''">
+                AND t1.outside = #{pageReqVO.outside}
+            </if>
+            <if test="pageReqVO.innerside != null and pageReqVO.innerside != ''">
+                AND t1.innerside = #{pageReqVO.innerside}
+            </if>
+            <if test="pageReqVO.useNature != null and pageReqVO.useNature != ''">
+                AND t1.use_nature = #{pageReqVO.useNature}
+            </if>
+            <if test="pageReqVO.transporttime != null and pageReqVO.transporttime.size() > 0">
+                and t1.transporttime BETWEEN
+                <foreach collection="pageReqVO.transporttime" item="time" separator=" AND ">
+                    #{time}
+                </foreach>
+            </if>
+            <if test="pageReqVO.drivingDate != null and pageReqVO.drivingDate.size() > 0">
+                and t1.driving_date BETWEEN
+                <foreach collection="pageReqVO.drivingDate" item="time" separator=" AND ">
+                    #{time}
+                </foreach>
+            </if>
+            <if test="pageReqVO.originalPrice != null and pageReqVO.originalPrice != ''">
+                AND t1.original_price = #{pageReqVO.originalPrice}
+            </if>
+            <if test="pageReqVO.createTime != null and pageReqVO.createTime != ''">
+                AND t1.create_time = #{pageReqVO.createTime}
+            </if>
+            <if test="pageReqVO.isIdle != null and pageReqVO.isIdle != ''">
+                AND t1.is_idle = #{pageReqVO.isIdle}
+            </if>
+            <if test="pageReqVO.isStandbyTrailer != null and pageReqVO.isStandbyTrailer != ''">
+                AND t1.is_standby_trailer = #{pageReqVO.isStandbyTrailer}
+            </if>
+            <if test="pageReqVO.parkingPosition != null and pageReqVO.parkingPosition != ''">
+                AND t1.parking_position = #{pageReqVO.parkingPosition}
+            </if>
+            <if test="pageReqVO.standbyTrailerStatus != null and pageReqVO.standbyTrailerStatus != ''">
+                AND t1.standby_trailer_status = #{pageReqVO.standbyTrailerStatus}
+            </if>
+            <if test="pageReqVO.replacedTrailer != null and pageReqVO.replacedTrailer != ''">
+                AND t1.replaced_trailer = #{pageReqVO.replacedTrailer}
+            </if>
+            <if test="pageReqVO.pipeConnectionType != null and pageReqVO.pipeConnectionType != ''">
+                AND t1.pipe_connection_type = #{pageReqVO.pipeConnectionType}
+            </if>
+            <if test="pageReqVO.tankCapacity != null and pageReqVO.tankCapacity != ''">
+                AND t1.tank_capacity = #{pageReqVO.tankCapacity}
+            </if>
+            <if test="pageReqVO.unloadingType != null and pageReqVO.unloadingType != ''">
+                AND t1.unloading_type = #{pageReqVO.unloadingType}
+            </if>
+            <if test="pageReqVO.vehicleFrame != null and pageReqVO.vehicleFrame != ''">
+                AND t1.vehicle_frame = #{pageReqVO.vehicleFrame}
+            </if>
+            <if test="pageReqVO.trailerWeight != null">
+                AND t1.trailer_weight = #{pageReqVO.trailerWeight}
+            </if>
+            <if test="pageReqVO.residualRate != null">
+                AND t1.residual_rate = #{pageReqVO.residualRate}
+            </if>
+            <if test="pageReqVO.bodyReporttime != null and pageReqVO.bodyReporttime.size() > 0">
+                and  t1.body_reporttime BETWEEN
+                <foreach collection="pageReqVO.bodyReporttime" item="time" separator=" AND ">
+                    #{time}
+                </foreach>
+            </if>
+            <if test="pageReqVO.isOut != null">
+                AND t1.is_out = #{pageReqVO.isOut}
+            </if>
+        AND t1.deleted = 0
+        ORDER BY t1.create_time DESC
+    </select>
+<select id="listHistoryFile" resultType="com.fmyd888.fengmao.module.infra.dal.dataobject.file.FileDO">
+        SELECT
+        code_business_type,
+        name,
+        url,
+        create_time
+        FROM infra_file
+        <where>
+            deleted = 1
+            <if test="sourceId != null">
+                AND source_id = #{sourceId}
+            </if>
+            <if test="codeBusinessTypes != null and !codeBusinessTypes.isEmpty()">
+                AND code_business_type IN
+                <foreach collection="codeBusinessTypes" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            and deleted = 0
+        </where>
+        group by code_business_type, name, url, create_time
+    </select>
+
+    <select id="getTrailerList"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.trailer.vo.DownTrailerExcelVO">
+        SELECT
+            t1.id,
+            t2.name as companyName,
+            t1.vehicle_trailer_no,
+            t1.trailer_code,
+            t1.certificat_time,
+            t1.vehicle_type,
+            t1.trailer_brand,
+            t1.vehicle_iden_code,
+            t1.vehicle_color,
+            t1.vehicle_mode,
+            t4.label as tankType,
+            t5.label as pipeConnectionType,
+            t1.trailer_weight,
+            t1.verificationmass,
+            t1.body_reporttime,
+            t1.transporttime,
+            t1.driving_date,
+            t6.label as unloadingType,
+--         t1.vehicle_iden_code,---可装货物
+            t1.tank_capacity,
+            t1.manufacturer_name,
+            t1.tyrenumber,
+            t1.equipmentmass,
+            t1.totalmass,
+            t1.outside,
+            t1.innerside,
+            t1.use_nature,
+            t1.original_price,
+            t1.residual_rate,
+            t1.is_out,
+            t3.customer_name as  outCompanyName
+        FROM fm_trailer t1
+             LEFT JOIN system_dept t2 on t2.id = t1.company_id   AND t2.deleted = 0
+             LEFT JOIN fm_customer t3 on t3.id = t1.out_company_id   AND t3.deleted = 0
+             LEFT JOIN system_dict_data t4  ON t1.tank_type = t4.value AND t4.dict_type = 'tank_type' AND t4.deleted = 0
+             LEFT JOIN system_dict_data t5 ON t1.pipe_connection_type = t5.value AND t5.dict_type = 'pipe_connection_type' AND t5.deleted = 0
+             LEFT JOIN system_dict_data t6  ON t1.unloading_type = t6.value  AND t6.dict_type = 'unloading_type' AND t6.deleted = 0 WHERE t1.deleted = 0
+-- 			 LEFT JOIN fm_trailer_commodity t7 on t7.entity_id = t1.id   AND t7.deleted = 0
+-- 			 LEFT JOIN fm_commodity t8 on t8.id = t7.commodity_id  AND t8.deleted = 0
+        ORDER BY t1.create_time DESC
+
+    </select>
+
+    <select id="getTrailerWithCommoditys" resultType="java.util.HashMap">
+        SELECT
+        t.id AS trailerId,
+        c.name AS commodityName
+        FROM
+        fm_trailer t
+        LEFT JOIN
+        fm_trailer_commodity t2 ON t2.entity_id = t.id
+        LEFT JOIN
+        fm_commodity c ON t2.commodity_id = c.id
+        WHERE
+        t.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND t.deleted = 0
+        AND t2.deleted = 0
+        AND c.deleted = 0
+    </select>
+    <select id="selectCommodityByTrailerId" resultType="java.util.HashMap">
+        SELECT
+            t3.id,
+            t3.name
+        FROM fm_trailer t1
+             LEFT JOIN fm_trailer_commodity t2 on t2.entity_id = t1.id AND t2.deleted = 0
+             LEFT JOIN fm_commodity t3 on t3.id = t2.commodity_id AND t3.deleted = 0
+        WHERE t1.deleted = 0 AND t1.id = #{trailerId} AND t3.name IS NOT NULL
+    </select>
+    <update id="batchUpdateIsIdleByIds">
+        UPDATE fm_trailer
+        SET is_idle = 0
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fmyd888.fengmao.module.information.dal.mysql.customer.CustomerMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+    <select id="selectPageByKeyword" resultType="com.fmyd888.fengmao.module.information.dal.dataobject.customer.CustomerDO">
+        SELECT *
+        FROM fm_customer
+        <where>
+            <if test="pageReqVO.keyword != null and pageReqVO.keyword != ''">
+                CONCAT(
+                    customer_code,
+                    customer_name,
+                    contact_address,
+                    contact_person,
+                    contact_phone,
+                    create_time,
+                    creator,
+                    remark
+                ) LIKE '%' + #{pageReqVO.keyword} + '%' COLLATE Chinese_PRC_CI_AS
+            </if>
+            <if test="pageReqVO.customerCode != null and pageReqVO.customerCode != ''">
+                AND customer_code = #{pageReqVO.customerCode}
+            </if>
+            <if test="pageReqVO.customerName != null and pageReqVO.customerName != ''">
+                AND customer_name = #{pageReqVO.customerName}
+            </if>
+            <if test="pageReqVO.contactPerson != null and pageReqVO.contactPerson != ''">
+                AND contact_person = #{pageReqVO.contactPerson}
+            </if>
+            <if test="pageReqVO.contactPhone != null and pageReqVO.contactPhone != ''">
+                AND contact_phone = #{pageReqVO.contactPhone}
+            </if>
+            <if test="pageReqVO.createTime != null">
+                AND create_time = #{pageReqVO.createTime}
+            </if>
+            <if test="pageReqVO.remark != null and pageReqVO.remark != ''">
+                AND remark = #{pageReqVO.remark}
+            </if>
+            and deleted = 0
+        </where>
+        ORDER BY ${pageReqVO.sortField} ${pageReqVO.collationValue}
+    </select>
+
+
+    <select id="selectCustomerDetail"
+            resultType="com.fmyd888.fengmao.module.information.api.customer.dto.customerDTO">
+        SELECT t1.customer_name,t1.id
+        FROM fm_customer t1
+        WHERE
+        t1.customer_group = 1
+        and t1.deleted = 0
+        <if test="searchKey != null and searchKey != ''">
+            AND t1.customer_name LIKE CONCAT('%', #{searchKey}, '%')
+        </if>
+
+    </select>
+    <select id="selectOutCustomer"
+            resultType="com.fmyd888.fengmao.module.information.api.customer.dto.customerDTO">
+        SELECT t1.customer_name,t1.id
+        FROM fm_customer t1
+        WHERE
+            t1.is_out = 1
+          and t1.deleted = 0
+    </select>
+
+    <select id="selectContractNum2"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.customer.dto.SettleConsignDetailDTO">
+        SELECT DISTINCT
+        t1.id as carriageAcceptContractId,
+        t1.id as consignContractId,
+        t1.paper_contract_number as paperContractNumber,
+        t2.name as consignCompanyName,
+        t3.customer_name as forwardingCompanyName,
+        t1.start_time,
+        t1.end_time,
+        t1.create_time
+        FROM
+        fm_carriage_contract t1
+        LEFT JOIN
+        system_dept t2 ON t1.company_id = t2.id
+        LEFT JOIN
+        fm_customer t3 ON t1.forwarding_company_id = t3.id
+        LEFT JOIN fm_carriage_invoices t4 on t4.carriage_id = t1.id
+        <where>
+            <if test="subordinateCompaniesId != null and !subordinateCompaniesId.isEmpty() and companyId != null">
+                AND t1.company_id = #{companyId}
+                AND t1.forwarding_company_id IN
+                <foreach item="item" index="index" collection="subordinateCompaniesId" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        AND t1.deleted = 0
+        AND t1.end_time >= GETDATE()
+        AND t1.contract_type = 2 --托运合同
+        AND t4.contract_amount > 0 AND t4.contract_amount IS NOT NULL
+        AND t2.deleted = 0
+        AND t3.deleted = 0
+        ORDER BY t1.create_time DESC
+
+    </select>
+
+    <select id="selectContractNumBySettleAccounts"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.customer.dto.SettleConsignDetailDTO">
+        SELECT DISTINCT
+        t1.id as acceptContractId,
+        t1.id as secondConsignContractId,
+        t1.paper_contract_number as paperContractNumber,
+        t2.customer_name as consignCompanyName,
+        t3.name as forwardingCompanyName,
+        t1.start_time,
+        t1.end_time,
+        t1.create_time
+        FROM
+        fm_carriage_contract t1
+        left join
+        fm_customer t2
+        on t1.consign_company_id = t2.id
+        left join
+        system_dept t3
+        on t1.company_id = t3.id
+        LEFT JOIN fm_carriage_invoices t4 on t4.carriage_id = t1.id
+        <where>
+            <if test="settleAccountsId != null and secondSettleAccountsId != null">
+                AND t1.company_id = #{settleAccountsId}
+                AND t1.consign_company_id = #{secondSettleAccountsId} -- 托运公司
+            </if>
+        </where>
+        and t1.deleted = 0
+        AND t1.contract_type = 1 --承运合同
+        AND t1.end_time >= GETDATE()
+        AND t4.contract_amount > 0 AND t4.contract_amount IS NOT NULL
+        AND t2.deleted = 0
+        AND t3.deleted = 0
+        ORDER BY t1.create_time DESC
+    </select>
+
+    <select id="secondSettleContractNum"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.customer.dto.SettleConsignDetailDTO">
+        SELECT DISTINCT
+        t1.id as acceptContractId,
+        t1.id as secondConsignContractId,
+        t1.paper_contract_number as paperContractNumber,
+        t2.customer_name as consignCompanyName,
+        t3.name as forwardingCompanyName,
+        t1.start_time,
+        t1.end_time,
+        t1.create_time
+        FROM
+        fm_carriage_contract t1
+        left join fm_customer t2 on t1.forwarding_company_id = t2.id
+        left join system_dept t3 on t1.company_id = t3.id
+        LEFT JOIN fm_carriage_invoices t4 on t4.carriage_id = t1.id
+        <where>
+            <if test="settleAccountsId != null and companyId != null">
+                AND t1.company_id = #{companyId}
+                AND t1.forwarding_company_id = #{settleAccountsId}
+            </if>
+        </where>
+        and t1.deleted = 0
+        AND t1.contract_type = 2
+        AND t1.end_time >= GETDATE()
+        AND t4.contract_amount > 0 AND t4.contract_amount IS NOT NULL
+        AND t2.deleted = 0
+        AND t3.deleted = 0
+        ORDER BY t1.create_time DESC
+
+    </select>
+
+    <select id="secondAcceptContractNum"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.customer.dto.SettleConsignDetailDTO">
+        SELECT DISTINCT
+            t1.id as secondAcceptContractId,
+            t1.id as secondConsignContractId,
+            t1.paper_contract_number as paperContractNumber,
+            t2.customer_name as consignCompanyName,
+            t3.name as forwardingCompanyName,
+            t1.start_time,
+            t1.end_time,
+            t1.create_time
+        FROM
+            fm_carriage_contract t1
+                left join fm_customer t2 on t1.consign_company_id = t2.id
+                left join system_dept t3 on t1.company_id = t3.id
+        LEFT JOIN fm_carriage_invoices t4 on t4.carriage_id = t1.id
+        <where>
+            <if test="companyId != null">
+                AND t1.company_id = #{companyId}
+            </if>
+        </where>
+        and t1.deleted = 0
+        AND t1.contract_type = 1
+        AND t1.end_time >= GETDATE()
+        AND t4.contract_amount > 0 AND t4.contract_amount IS NOT NULL
+        AND t2.deleted = 0
+        AND t3.deleted = 0
+        ORDER BY t1.create_time DESC
+
+    </select>
+</mapper>

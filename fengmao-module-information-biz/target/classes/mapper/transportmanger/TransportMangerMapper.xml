@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fmyd888.fengmao.module.information.dal.mysql.transportmanger.TransportMangerMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+     -->
+    <!-- 根据 orderByColumn 和 sortMode 是否有值来选择的排序字段和排序方式
+       注意传入参数对象别名(pageReqVO)或者表别名(t1)！！！
+       -->
+    <sql id="order">
+        <if test="pageReqVO.orderByColumn != null and pageReqVO.orderByColumn != '' and pageReqVO.sortMode != null and pageReqVO.sortMode != ''">
+            ORDER BY t1.${pageReqVO.orderByColumn} ${pageReqVO.sortMode}
+        </if>
+    </sql>
+    <select id="selectPageByKeyword"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.transportmanger.vo.TransportMangerRespVO">
+        SELECT t1.*,
+            t3.id as upstreamPurchaseId,
+            t4.id as downstreamPurchaseId,
+            t3.purchase_code as upstreamPurchaseCode,
+            t4.purchase_code as downstreamPurchaseCode,
+            t2.name as companyName,
+            t7.name as commodityName
+        FROM fm_transport_manger t1
+            left join system_dept t2 on t1.company_id = t2.id and t2.deleted = 0
+            left join fm_purchase_manger t3 on t1.upstream_purchase_id = t3.id and t3.deleted = 0
+            left join fm_purchase_manger t4 on t1.downstream_purchase_id = t4.id and t4.deleted = 0
+            left join fm_commodity t7 on t1.commodity_id = t7.id and t7.deleted = 0
+            left join fm_customer t11 on t11.id = t1.applicant_id and t11.deleted = 0
+            left join fm_customer t12 on t12.id = t1.carrier_id and t12.deleted = 0
+            left join fm_customer t13 on t13.id = t1.load_factory_id and t13.deleted = 0
+            left join fm_customer t14 on t14.id = t1.unload_factory_id and t14.deleted = 0
+            where  t1.deleted = 0
+            <if test="pageReqVO.keyword != null and pageReqVO.keyword != ''">
+                AND (
+                t11.customer_name LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t1.transport_code LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t3.purchase_code LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t4.purchase_code LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t12.customer_name LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t13.customer_name LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t14.customer_name LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                OR t7.name LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+                )
+            </if>
+            <if test="pageReqVO.downstreamPurchaseId != null">
+                AND t1.downstream_purchase_id = #{pageReqVO.downstreamPurchaseId}
+            </if>
+            <if test="pageReqVO.upstreamPurchaseId != null">
+                AND t1.upstream_purchase_id = #{pageReqVO.upstreamPurchaseId}
+            </if>
+            <if test="pageReqVO.loadFactoryId != null">
+                AND t1.load_factory_id = #{pageReqVO.loadFactoryId}
+            </if>
+            <if test="pageReqVO.purchaseCode != null and pageReqVO.purchaseType == 2">
+                AND t3.purchase_code = #{pageReqVO.purchaseCode} AND t3.type = 2
+            </if>
+            <if test="pageReqVO.purchaseCode != null and pageReqVO.purchaseType == 1">
+                AND t4.purchase_code = #{pageReqVO.purchaseCode} AND t4.type = 1
+            </if>
+            <if test="pageReqVO.unloadFactoryId != null">
+                AND t1.unload_factory_id = #{pageReqVO.unloadFactoryId}
+            </if>
+            <if test="pageReqVO.companyId != null and pageReqVO.companyId != ''">
+                AND t1.company_id = #{pageReqVO.companyId}
+            </if>
+            <if test="pageReqVO.status != null and pageReqVO.status == 1">
+                AND t1.status = 1
+            </if>
+            <if test="pageReqVO.status != null and pageReqVO.status == 2">
+                AND t1.status = 2
+            </if>
+            <if test="pageReqVO.status != null and pageReqVO.status == 3">
+                AND (t1.transport_edae BETWEEN DATEADD(DAY, -7, GETDATE()) AND GETDATE())
+            </if>
+            order by t1.id desc
+    </select>
+
+    <select id="transportDownload" resultType="com.fmyd888.fengmao.module.information.controller.admin.transportmanger.vo.TransportDownloadExcelVO">
+        select
+            t1.id as transportId,
+            t4.task_code,
+            t1.dept_id,
+            t5.fleet_id,
+            t5.car_id,
+            t5.load_factory_id,
+            t5.load_time,
+            t5.load_tonnage,
+            t5.unload_factory_id,
+            t5.unload_time,
+            t5.unload_tonnage,
+            t1.upstream_purchase_id,
+            t1.downstream_purchase_id,
+            t1.transport_code,
+            t5.load_account_id,
+            t5.unload_account_id
+        from fm_transport_manger t1
+        inner join fm_business_plan t2 on t1.id = t2.transport_manger_id and t2.deleted = 0
+        inner join fm_business_plan_query t3 on t2.id = t3.business_plan_id and t3.deleted = 0
+        inner join fm_task t4 on t4.delivery_plan_id = t3.id and t4.deleted = 0
+        inner join fm_cost t5 on t4.id = t5.task_id and t5.deleted = 0
+        <where>
+            <if test="id != null">
+                t1.id = #{id}
+            </if>
+            and t1.deleted = 0
+        </where>
+    </select>
+
+
+    <update id="updateStatusToEnded">
+
+        UPDATE fm_transport_manger
+        SET status = 2
+        WHERE deleted = 0
+        AND id IN
+        <foreach item="id" collection="ids" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        <!--            transport_edae &lt; GETDATE()-->
+
+    </update>
+    <update id="updateStatusToEnded2">
+        UPDATE fm_transport_manger
+        SET status = 1
+        WHERE deleted = 0
+        AND id IN
+        <foreach item="id" collection="ids" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </update>
+</mapper>
+

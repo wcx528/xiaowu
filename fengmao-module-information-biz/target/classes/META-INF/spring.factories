@@ -1,0 +1,3 @@
+#spring2.xx? ????????
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.fmyd888.fengmao.module.information.InformationApplication

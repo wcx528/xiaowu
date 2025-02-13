@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fmyd888.fengmao.module.information.dal.mysql.mainvehicle.MainVehicleMapper">
+
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+    <select id="selectPageByKeyword"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.mainvehicle.vo.MainVehicleRespVO">
+        SELECT t1.*, t2.name as companyName,t3.customer_name as outCompanyName
+        FROM fm_main_vehicle t1
+        LEFT JOIN system_dept t2 ON t2.id = t1.company_id AND t2.deleted = 0
+        LEFT JOIN fm_customer t3 ON t3.id = t1.out_company_id AND t3.deleted = 0
+        WHERE t1.deleted = 0
+        <if test="pageReqVO.keyword != null and pageReqVO.keyword != ''">
+            AND CONCAT(
+            t1.motorvehicle_number,
+            t1.register_time,
+            t1.vehicle_type,
+            t1.vehicle_brand,
+            t1.vehicle_frame,
+            t1.vehicle_color,
+            t1.vehicle_model,
+            t1.vehicle_import,
+            t1.engine_code,
+            t1.engine_type,
+            t1.fuel_type,
+            t1.power,
+            t1.manufacturer_name,
+            t1.turning_form,
+            t1.track_width,
+            t1.tyre_number,
+            t1.tyre_specifications,
+            t1.spring_number,
+            t1.wheelbase,
+            t1.axes_number,
+            t1.outside,
+            t1.innerside,
+            t1.totalmass,
+            t1.verificationmass,
+            t1.towmass,
+            t1.use_nature,
+            t1.vehicle_access,
+            t1.production_date,
+            t1.license_code,
+            t1.transport_code,
+            t1.transport_date,
+            t1.identifier,
+            t1.original_price,
+            t1.user_years,
+            t1.residual_rate,
+            t1.antilock,
+            t1.brake_front,
+            t1.brake_after,
+            t1.brake_mode,
+            t1.transmission,
+            t1.retarder,
+            t1.condition_system,
+            t1.gps,
+            t1.chassis_code,
+            t1.power_type,
+            t1.electrical_power,
+            t1.battery_type,
+            t1.emission_standard,
+            t1.code,
+            t1.plate_number,
+            t1.driving_date,
+            t1.sync_time,
+            t1.sync_info,
+            t2.name,
+            t1.company_id,
+            t1.secondary_maintenance,
+            t1.vehicle_code,
+            t1.front_weight,
+            t1.remark,
+            t1.creator,
+<!--            t1.create_time,-->
+            t1.updater,
+            t1.update_time
+            ) LIKE '%' + #{pageReqVO.keyword} + '%' COLLATE Chinese_PRC_CI_AS
+        </if>
+        <if test="pageReqVO.vehicleBrand != null and pageReqVO.vehicleBrand != ''">
+            AND t1.vehicle_brand = #{pageReqVO.vehicleBrand}
+        </if>
+        <if test="pageReqVO.vehicleStatus != null and pageReqVO.vehicleStatus != ''">
+            AND t1.vehicle_status = #{pageReqVO.vehicleStatus}
+        </if>
+        <if test="pageReqVO.useStatus != null and pageReqVO.useStatus == 1">--正常
+            AND t1.status IS NULL
+        </if>
+        <if test="pageReqVO.useStatus != null and pageReqVO.useStatus == 2"> -- 注销
+            AND t1.status = 1
+        </if><if test="pageReqVO.useStatus != null and pageReqVO.useStatus == 3"> --报废
+            AND t1.status = 2
+        </if>
+        <if test="pageReqVO.vehicleColor != null and pageReqVO.vehicleColor != ''">
+            AND t1.vehicle_color = #{pageReqVO.vehicleColor}
+        </if>
+        <if test="pageReqVO.vehicleImport != null and pageReqVO.vehicleImport != ''">
+            AND t1.vehicle_import = #{pageReqVO.vehicleImport}
+        </if>
+        <if test="pageReqVO.powerType != null and pageReqVO.powerType != ''">
+            AND t1.power_type = #{pageReqVO.powerType}
+        </if>
+        <if test="pageReqVO.transmission != null">
+            AND t1.transmission = #{pageReqVO.transmission}
+        </if>
+        <if test="pageReqVO.vehicleType != null and pageReqVO.vehicleType != ''">
+            AND t1.vehicle_type = #{pageReqVO.vehicleType}
+        </if>
+        <if test="pageReqVO.companyId != null and pageReqVO.companyId != ''">
+            AND t1.company_id = #{pageReqVO.companyId}
+        </if>
+        <if test="pageReqVO.isOut != null">
+            AND t1.is_out = #{pageReqVO.isOut}
+        </if>
+        <if test="pageReqVO.brakeMode != null">
+            AND t1.brake_mode = #{pageReqVO.brakeMode}
+        </if>
+        <if test="pageReqVO.brakeFront != null">
+            AND t1.brake_front = #{pageReqVO.brakeFront}
+        </if>
+        <if test="pageReqVO.brakeAfter != null">
+            AND t1.brake_after = #{pageReqVO.brakeAfter}
+        </if>
+        <if test="pageReqVO.retarder != null">
+            AND t1.retarder = #{pageReqVO.retarder}
+        </if>
+        <if test="pageReqVO.conditionSystem != null">
+            AND t1.condition_system = #{pageReqVO.conditionSystem}
+        </if>
+        <if test="pageReqVO.gps != null">
+            AND t1.gps = #{pageReqVO.gps}
+        </if>
+        <if test="pageReqVO.registerTime != null and pageReqVO.registerTime.size() > 0">
+            AND t1.register_time BETWEEN
+            <foreach collection="pageReqVO.registerTime" item="time" separator=" AND ">
+                #{time}
+            </foreach>
+        </if>
+        <if test="pageReqVO.secondaryMaintenance != null and pageReqVO.secondaryMaintenance.size() > 0">
+            AND t1.secondary_maintenance BETWEEN
+            <foreach collection="pageReqVO.secondaryMaintenance" item="time" separator=" AND ">
+                #{time}
+            </foreach>
+        </if>
+        <if test="pageReqVO.productionDate != null and pageReqVO.productionDate.size() > 0">
+            AND t1.production_date BETWEEN
+            <foreach collection="pageReqVO.productionDate" item="time" separator=" AND ">
+                #{time}
+            </foreach>
+        </if>
+        <if test="pageReqVO.drivingDate != null and pageReqVO.drivingDate.size() > 0">
+            AND t1.driving_date BETWEEN
+            <foreach collection="pageReqVO.drivingDate" item="time" separator=" AND ">
+                #{time}
+            </foreach>
+        </if>
+        <if test="pageReqVO.motorvehicleNumber != null and pageReqVO.motorvehicleNumber != ''">
+            AND t1.motorvehicle_number = #{pageReqVO.motorvehicleNumber}
+        </if>
+        <if test="pageReqVO.vehicleFrame != null and pageReqVO.vehicleFrame != ''">
+            AND t1.vehicle_frame = #{pageReqVO.vehicleFrame}
+        </if>
+        <if test="pageReqVO.vehicleModel != null and pageReqVO.vehicleModel != ''">
+            AND t1.vehicle_model = #{pageReqVO.vehicleModel}
+        </if>
+        <if test="pageReqVO.engineCode != null and pageReqVO.engineCode != ''">
+            AND t1.engine_code = #{pageReqVO.engineCode}
+        </if>
+        <if test="pageReqVO.engineType != null and pageReqVO.engineType != ''">
+            AND t1.engine_type = #{pageReqVO.engineType}
+        </if>
+        <if test="pageReqVO.fuelType != null and pageReqVO.fuelType != ''">
+            AND t1.fuel_type = #{pageReqVO.fuelType}
+        </if>
+        <if test="pageReqVO.power != null and pageReqVO.power != ''">
+            AND t1.power = #{pageReqVO.power}
+        </if>
+        <if test="pageReqVO.manufacturerName != null and pageReqVO.manufacturerName != ''">
+            AND t1.manufacturer_name = #{pageReqVO.manufacturerName}
+        </if>
+        <if test="pageReqVO.turningForm != null and pageReqVO.turningForm != ''">
+            AND t1.turning_form = #{pageReqVO.turningForm}
+        </if>
+        <if test="pageReqVO.trackWidth != null and pageReqVO.trackWidth != ''">
+            AND t1.track_width = #{pageReqVO.trackWidth}
+        </if>
+        <if test="pageReqVO.tyreNumber != null and pageReqVO.tyreNumber != ''">
+            AND t1.tyre_number = #{pageReqVO.tyreNumber}
+        </if>
+        <if test="pageReqVO.tyreSpecifications != null and pageReqVO.tyreSpecifications != ''">
+            AND t1.tyre_specifications = #{pageReqVO.tyreSpecifications}
+        </if>
+        <if test="pageReqVO.springNumber != null and pageReqVO.springNumber != ''">
+            AND t1.spring_number = #{pageReqVO.springNumber}
+        </if>
+        <if test="pageReqVO.wheelbase != null and pageReqVO.wheelbase != ''">
+            AND t1.wheelbase = #{pageReqVO.wheelbase}
+        </if>
+        <if test="pageReqVO.axesNumber != null and pageReqVO.axesNumber != ''">
+            AND t1.axes_number = #{pageReqVO.axesNumber}
+        </if>
+        <if test="pageReqVO.outside != null and pageReqVO.outside != ''">
+            AND t1.outside = #{pageReqVO.outside}
+        </if>
+            <if test="pageReqVO.innerside != null and pageReqVO.innerside != ''">
+                AND t1.innerside = #{pageReqVO.innerside}
+            </if>
+            <if test="pageReqVO.totalmass != null and pageReqVO.totalmass != ''">
+                AND t1.totalmass = #{pageReqVO.totalmass}
+            </if>
+            <if test="pageReqVO.verificationmass != null and pageReqVO.verificationmass != ''">
+                AND t1.verificationmass = #{pageReqVO.verificationmass}
+            </if>
+            <if test="pageReqVO.towmass != null and pageReqVO.towmass != ''">
+                AND t1.towmass = #{pageReqVO.towmass}
+            </if>
+            <if test="pageReqVO.useNature != null and pageReqVO.useNature != ''">
+                AND t1.use_nature = #{pageReqVO.useNature}
+            </if>
+            <if test="pageReqVO.licenseCode != null and pageReqVO.licenseCode != ''">
+                AND t1.license_code = #{pageReqVO.licenseCode}
+            </if>
+            <if test="pageReqVO.transportCode != null and pageReqVO.transportCode != ''">
+                AND t1.transport_code = #{pageReqVO.transportCode}
+            </if>
+            <if test="pageReqVO.transportDate != null and pageReqVO.transportDate != ''">
+                AND t1.transport_date = #{pageReqVO.transportDate}
+            </if>
+            <if test="pageReqVO.identifier != null and pageReqVO.identifier != ''">
+                AND t1.identifier = #{pageReqVO.identifier}
+            </if>
+            <if test="pageReqVO.originalPrice != null and pageReqVO.originalPrice != ''">
+                AND t1.original_price = #{pageReqVO.originalPrice}
+            </if>
+            <if test="pageReqVO.residualRate != null and pageReqVO.residualRate != ''">
+                AND t1.residual_rate = #{pageReqVO.residualRate}
+            </if>
+            <if test="pageReqVO.antilock != null and pageReqVO.antilock != ''">
+                AND t1.antilock = #{pageReqVO.antilock}
+            </if>
+            <if test="pageReqVO.chassisCode != null and pageReqVO.chassisCode != ''">
+                AND t1.chassis_code = #{pageReqVO.chassisCode}
+            </if>
+            <if test="pageReqVO.electricalPower != null and pageReqVO.electricalPower != ''">
+                AND t1.electrical_power = #{pageReqVO.electricalPower}
+            </if>
+            <if test="pageReqVO.batteryType != null and pageReqVO.batteryType != ''">
+                AND t1.battery_type = #{pageReqVO.batteryType}
+            </if>
+            <if test="pageReqVO.emissionStandard != null and pageReqVO.emissionStandard != ''">
+                AND t1.emission_standard = #{pageReqVO.emissionStandard}
+            </if>
+            <if test="pageReqVO.code != null and pageReqVO.code != ''">
+                AND t1.code = #{pageReqVO.code}
+            </if>
+            <if test="pageReqVO.plateNumber != null and pageReqVO.plateNumber != ''">
+                AND t1.plate_number LIKE CONCAT('%', #{pageReqVO.plateNumber}, '%')
+            </if>
+            <if test="pageReqVO.isIdle != null and pageReqVO.isIdle != ''">
+                AND t1.is_idle = #{pageReqVO.isIdle}
+            </if>
+            <if test="pageReqVO.syncTime != null and pageReqVO.syncTime != ''">
+                AND t1.sync_time = #{pageReqVO.syncTime}
+            </if>
+            <if test="pageReqVO.syncInfo != null and pageReqVO.syncInfo != ''">
+                AND t1.sync_info = #{pageReqVO.syncInfo}
+            </if>
+            <if test="pageReqVO.vehicleCode != null and pageReqVO.vehicleCode != ''">
+                AND t1.vehicle_code = #{pageReqVO.vehicleCode}
+            </if>
+            <if test="pageReqVO.frontWeight != null and pageReqVO.frontWeight != ''">
+                AND t1.front_weight = #{pageReqVO.frontWeight}
+            </if>
+        <if test="pageReqVO.outCompanyId != null and pageReqVO.outCompanyId != ''">
+                AND t1.out_company_id = #{pageReqVO.outCompanyId}
+            </if>
+        ORDER BY t1.create_time DESC
+    </select>
+
+    <select id="listHistoryFile" resultType="com.fmyd888.fengmao.module.infra.dal.dataobject.file.FileDO">
+        SELECT
+            code_business_type,
+            name,
+            url,
+            create_time
+        FROM infra_file
+        <where>
+            deleted = 1
+            <if test="sourceId != null">
+                AND source_id = #{sourceId}
+            </if>
+            <if test="codeBusinessTypes != null and !codeBusinessTypes.isEmpty()">
+                AND code_business_type IN
+                <foreach collection="codeBusinessTypes" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        group by code_business_type, name, url, create_time
+    </select>
+
+    <select id="listExcelData"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.mainvehicle.vo.DownMainVehicleExcelVO">
+        SELECT
+            t1.id,
+            t1.motorvehicle_number,
+            t1.register_time,
+            t1.vehicle_type,
+            t1.vehicle_brand,
+            t1.vehicle_frame,
+            t1.vehicle_color,
+            t1.vehicle_model,
+            t1.vehicle_import,
+            t1.engine_code,
+            t1.engine_type,
+            t1.fuel_type,
+            t1.power,
+            t1.manufacturer_name,
+            t1.turning_form,
+            t1.track_width,
+            t1.tyre_number,
+            t1.tyre_specifications,
+            t1.spring_number,
+            t1.wheelbase,
+            t1.axes_number,
+            t1.outside,
+            t1.innerside,
+            t1.totalmass,
+            t1.verificationmass,
+            t1.towmass,
+            t1.use_nature,
+            t1.vehicle_access,
+            t1.production_date,
+            t1.license_code,
+            t1.transport_code,
+            t1.transport_date,
+            t1.identifier,
+            t1.original_price,
+            t1.user_years,
+            t1.residual_rate,
+            t1.antilock,
+            t1.brake_front,
+            t1.brake_after,
+            t1.brake_mode,
+            t1.transmission,
+            t1.retarder,
+            t1.condition_system,
+            t1.gps,
+            t1.chassis_code,
+            t1.power_type,
+            t1.electrical_power,
+            t1.battery_type,
+            t1.emission_standard,
+            t1.code,
+            t1.plate_number,
+            t1.driving_date,
+            t1.sync_time,
+            t1.sync_info,
+            t2.name as company_name,
+            t1.company_id,
+            t1.secondary_maintenance,
+            t1.vehicle_code,
+            t1.front_weight,
+            t1.remark,
+            t1.creator,
+            t1.updater,
+            t1.update_time
+        FROM fm_main_vehicle t1
+            LEFT JOIN system_dept t2 ON t2.id = t1.company_id
+        WHERE t1.deleted = 0
+          AND t2.deleted = 0
+    </select>
+
+    <update id="batchUpdateIsIdleByIds">
+        UPDATE fm_main_vehicle
+        SET is_idle = 0
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+</mapper>

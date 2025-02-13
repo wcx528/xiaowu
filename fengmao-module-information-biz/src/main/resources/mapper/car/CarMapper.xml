@@ -1,0 +1,726 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fmyd888.fengmao.module.information.dal.mysql.car.CarMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+    <select id="selectPageByKeyword"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.car.vo.CarRespVO">
+        SELECT
+        t1.*,
+        t2.plate_number mainVehicleName,
+        t2.vehicle_brand,
+        t2.front_weight,
+        t3.tank_type,
+        t3.verificationmass,
+        t3.trailer_weight,
+        t2.register_time,
+        t2.engine_code,
+        t3.certificat_time,
+        t3.vehicle_trailer_no as trailerName,
+        t5.mobile as captainPhone,
+        t5.nickname as captainName,
+        t6.mobile as mainPhone,
+        t6.nickname as mainName,
+        t7.mobile as deputyPhone,
+        t7.nickname as deputyName,
+        t8.mobile as escortPhone,
+        t9.name as companyName,
+        t10.name as fleetName,
+        t11.cert_no as mainCertNo,
+        t12.cert_no as deputyCertNo,
+        t13.cert_no as escortCertNo,
+        t8.nickname as escortName
+        FROM fm_car t1
+        left JOIN fm_main_vehicle t2 ON t1.main_vehicle_id = t2.id and t2.deleted = 0
+        left JOIN fm_trailer t3 ON t1.trailer_id = t3.id and t3.deleted = 0
+        left JOIN system_users t5 ON t1.captain_id = t5.id and t5.deleted = 0
+        left JOIN system_users t6 ON t1.main_id = t6.id and t6.deleted = 0
+        left JOIN system_users t7 ON t1.deputy_id = t7.id and t7.deleted = 0
+        left JOIN system_users t8 ON t1.escort_id = t8.id and t8.deleted = 0
+        left JOIN system_dept t9 ON t1.company_id = t9.id and t9.deleted = 0
+        left JOIN fm_fleet t10 ON t1.fleet_id = t10.id and t10.deleted = 0
+        left JOIN fm_roster t11 ON t1.main_id = t11.id and t11.deleted = 0
+        left JOIN fm_roster t12 ON t1.deputy_id = t12.id and t12.deleted = 0
+        left JOIN fm_roster t13 ON t1.escort_id = t13.id and t13.deleted = 0
+        WHERE  t1.deleted = 0
+        <if test="pageReqVO.keyword != null and pageReqVO.keyword != ''">
+            AND (
+            t2.plate_number LIKE '%' + #{pageReqVO.keyword} + '%' OR
+            t3.vehicle_trailer_no LIKE '%' + #{pageReqVO.keyword} + '%' OR
+            t5.nickname LIKE '%' + #{pageReqVO.keyword} + '%' OR
+            t5.mobile LIKE '%' + #{pageReqVO.keyword} + '%' OR
+            t10.name LIKE '%' + #{pageReqVO.keyword} + '%' OR
+            t1.god_type LIKE '%' + #{pageReqVO.keyword} + '%' OR
+            t9.name LIKE '%' + #{pageReqVO.keyword} + '%'
+            )
+        </if>
+            <if test="pageReqVO.mainVehicleId != null and pageReqVO.mainVehicleId != ''">
+                AND t1.main_vehicle_id = #{pageReqVO.mainVehicleId}
+            </if>
+            <if test="pageReqVO.trailerId != null and pageReqVO.trailerId != ''">
+                AND t1.trailer_id = #{pageReqVO.trailerId}
+            </if>
+            <if test="pageReqVO.commodityId != null and pageReqVO.commodityId != ''">
+                AND t1.commodity_id = #{pageReqVO.commodityId}
+            </if>
+            <if test="pageReqVO.deputyId != null and pageReqVO.deputyId != ''">
+                AND t1.deputy_id = #{pageReqVO.deputyId}
+            </if>
+            <if test="pageReqVO.mainId != null and pageReqVO.mainId != ''">
+                AND t1.main_id = #{pageReqVO.mainId}
+            </if>
+            <if test="pageReqVO.fleetId != null and pageReqVO.fleetId != ''">
+                AND t1.fleet_id = #{pageReqVO.fleetId}
+            </if>
+            <if test="pageReqVO.mainId != null and pageReqVO.mainId != ''">
+                AND t1.main_id = #{pageReqVO.mainId}
+            </if>
+            <if test="pageReqVO.commodityId != null and pageReqVO.commodityId != ''">
+                AND t1.commodity_id = #{pageReqVO.commodityId}
+            </if>
+            <if test="pageReqVO.escortId != null and pageReqVO.escortId != ''">
+                AND t1.escort_id = #{pageReqVO.escortId}
+            </if>
+            <if test="pageReqVO.deputyPhone != null and pageReqVO.deputyPhone != ''">
+                AND t1.deputy_phone = #{pageReqVO.deputyPhone}
+            </if>
+            <if test="pageReqVO.escortPhone != null and pageReqVO.escortPhone != ''">
+                AND t1.escort_phone = #{pageReqVO.escortPhone}
+            </if>
+            <if test="pageReqVO.ableTonnage != null and pageReqVO.ableTonnage != ''">
+                AND t1.able_tonnage = #{pageReqVO.ableTonnage}
+            </if>
+            <if test="pageReqVO.actualTonnage != null and pageReqVO.actualTonnage != ''">
+                AND t1.actual_tonnage = #{pageReqVO.actualTonnage}
+            </if>
+            <if test="pageReqVO.godType != null and pageReqVO.godType != ''">
+                AND t1.god_type = #{pageReqVO.godType}
+            </if>
+            <if test="pageReqVO.status != null and pageReqVO.status != ''">
+                AND t1.status = #{pageReqVO.status}
+            </if>
+            <if test="pageReqVO.captainId != null and pageReqVO.captainId != ''">
+                AND t1.captain_id = #{pageReqVO.captainId}
+            </if>
+            <if test="pageReqVO.captainPhone != null and pageReqVO.captainPhone != ''">
+                AND t1.captain_phone = #{pageReqVO.captainPhone}
+            </if>
+            <if test="pageReqVO.mainPhone != null and pageReqVO.mainPhone != ''">
+                AND t1.main_phone = #{pageReqVO.mainPhone}
+            </if>
+            <if test="pageReqVO.isTurnRepair != null and pageReqVO.isTurnRepair != ''">
+                AND t1.is_turn_repair = #{pageReqVO.isTurnRepair}
+            </if>
+            <if test="pageReqVO.vehicleBrand != null and pageReqVO.vehicleBrand != ''">
+                AND t1.vehicle_brand = #{pageReqVO.vehicleBrand}
+            </if>
+            <if test="pageReqVO.tankType != null and pageReqVO.tankType != ''">
+                AND t3.tank_type = #{pageReqVO.tankType}
+            </if>
+            <if test="pageReqVO.frontWeight != null and pageReqVO.frontWeight != ''">
+                AND t2.front_weight = #{pageReqVO.frontWeight}
+            </if>
+            <if test="pageReqVO.trailerWeight != null and pageReqVO.trailerWeight != ''">
+                AND t3.trailer_weight = #{pageReqVO.trailerWeight}
+            </if>
+            <if test="pageReqVO.verificationmass != null and pageReqVO.verificationmass != ''">
+                AND t3.verificationmass = #{pageReqVO.verificationmass}
+            </if>
+            <if test="pageReqVO.replaceTime != null and pageReqVO.replaceTime != ''">
+                AND t1.replace_time = #{pageReqVO.replaceTime}
+            </if>
+        ORDER BY t1.create_time DESC
+    </select>
+
+    <select id="selectCarCyclePageByKeyword"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.car.vo.CarCycleRespVO">
+        SELECT
+         combined.id,
+         combined.type,
+         combined.vehicleNumber,
+         combined.vehicle_brand,
+         combined.register_time,
+         combined.user_years,
+         combined.violation_count,
+         combined.deactivation_date,
+         combined.scrap_date,
+         combined.creatorName,
+         combined.remark,
+         combined.deptName,
+         combined.is_enabled,
+         combined.is_idle,
+         combined.status,
+         combined.approval_time,
+         combined.approval_status,
+         combined.totalTonnage,
+         combined.totalMileage
+        FROM (
+        <!-- 车辆类型为 1 或者 为空时查询主车 -->
+        <if test="pageReqVO.vehicleType == null or pageReqVO.vehicleType == 1">
+            SELECT
+            t1.id,
+            1 AS type,
+            t1.plate_number AS vehicleNumber,
+            t1.vehicle_brand,
+            t1.register_time,
+            t1.scrap_date,
+            t1.user_years,
+            t1.violation_count,
+            t1.deactivation_date,
+            t5.nickname as creatorName,
+            t1.remark,
+            t3.name AS deptName,
+            t1.is_enabled,
+            t1.is_idle,
+            t1.status AS status,
+            t1.approval_time,
+            t1.approval_status,
+            COALESCE(t4.total_tonnage, 0) AS totalTonnage,
+            COALESCE(t6.total_mileage, 0) AS totalMileage
+            FROM fm_main_vehicle t1
+            LEFT JOIN system_dept t3 ON t1.dept_id = t3.id AND t3.deleted = 0
+            LEFT JOIN system_users t5 ON t5.id = t1.creator AND t5.deleted = 0
+            LEFT JOIN (
+            SELECT car_id, SUM(tonnage) AS total_tonnage
+            FROM fm_task
+            GROUP BY car_id
+            ) t4 ON t1.id = t4.car_id
+
+            LEFT JOIN (
+            SELECT car_id, SUM(mileage) AS total_mileage
+            FROM fm_car_mileage
+            GROUP BY car_id
+            ) t6 ON t1.id = t6.car_id
+            WHERE t1.deleted = 0
+            <include refid="deptConditiont1"/>
+            <include refid="statusConditionMainVehicle"/>
+        </if>
+
+        <if test="pageReqVO.vehicleType == null">
+            UNION ALL
+        </if>
+
+        <!-- 车辆类型为 2 或者 为空时查询挂车 -->
+        <if test="pageReqVO.vehicleType == null or pageReqVO.vehicleType == 2">
+            SELECT
+            t2.id,
+            2 AS type,
+            t2.vehicle_trailer_no AS vehicleNumber,
+            t2.trailer_brand,
+            t2.certificat_time as register_time,
+            t2.scrap_date,
+            t2.user_years,
+            t2.violation_count,
+            t2.deactivation_date,
+            t6.nickname as creatorName,
+            t2.remark,
+            t4.name AS deptName,
+            t2.is_enabled,
+            t2.is_idle,
+            t2.status AS status,
+            t2.approval_time,
+            t2.approval_status,
+            NULL as totalTonnage,
+            NULL as totalMileage
+            FROM fm_trailer t2
+            LEFT JOIN system_dept t4 ON t2.dept_id = t4.id AND t4.deleted = 0
+            LEFT JOIN system_users t6 ON t6.id = t2.creator AND t6.deleted = 0
+            WHERE t2.deleted = 0
+            <include refid="deptConditiont2"/>
+            <include refid="statusConditionTrailer"/>
+        </if>
+        ) AS combined
+        <where>
+            <if test="pageReqVO.keyword != null and pageReqVO.keyword != ''">
+                AND CONCAT(
+                ISNULL(combined.vehicleNumber, ''),
+                ISNULL(combined.vehicle_brand, ''),
+                ISNULL(combined.violation_count, ''),
+                ISNULL(combined.creatorName, ''),
+                ISNULL(combined.deptName, ''),
+                ISNULL(combined.remark, '')
+                ) LIKE CONCAT('%', #{pageReqVO.keyword}, '%') COLLATE Chinese_PRC_CI_AS
+            </if>
+            <if test="pageReqVO.vehicleNumber != null and pageReqVO.vehicleNumber != ''">
+                AND combined.vehicleNumber LIKE CONCAT('%', #{pageReqVO.vehicleNumber}, '%')
+            </if>
+            <if test="pageReqVO.registerRange != null and pageReqVO.registerRange.size() > 0">
+                <if test="pageReqVO.registerRange[0] != null">
+                    and combined.register_time >= #{pageReqVO.registerRange[0]}
+                </if>
+                <if test="pageReqVO.registerRange.size() > 1 and pageReqVO.registerRange[1] != null">
+                    and combined.register_time &lt;= #{pageReqVO.registerRange[1]}
+                </if>
+            </if>
+            <if test="pageReqVO.userYears != null and pageReqVO.userYears != ''">
+                AND combined.user_years LIKE CONCAT('%', #{pageReqVO.userYears}, '%')
+            </if>
+            <if test="pageReqVO.violationCount != null and pageReqVO.violationCount != ''">
+                AND combined.violation_count LIKE CONCAT('%', #{pageReqVO.violationCount}, '%')
+            </if>
+            <if test="pageReqVO.cancelRange != null and pageReqVO.cancelRange.size() > 0">
+                <if test="pageReqVO.cancelRange[0] != null">
+                    and combined.deactivation_date >= #{pageReqVO.cancelRange[0]}
+                </if>
+                <if test="pageReqVO.cancelRange.size() > 1 and pageReqVO.cancelRange[1] != null">
+                    and combined.deactivation_date &lt;= #{pageReqVO.cancelRange[1]}
+                </if>
+            </if>
+            <if test="pageReqVO.scrapRange != null and pageReqVO.scrapRange.size() > 0">
+                <if test="pageReqVO.scrapRange[0] != null">
+                    and combined.scrap_date >= #{pageReqVO.scrapRange[0]}
+                </if>
+                <if test="pageReqVO.scrapRange.size() > 1 and pageReqVO.scrapRange[1] != null">
+                    and combined.scrap_date &lt;= #{pageReqVO.scrapRange[1]}
+                </if>
+            </if>
+            <if test="pageReqVO.approveRange != null and pageReqVO.approveRange.size() > 0">
+                <if test="pageReqVO.approveRange[0] != null">
+                    and combined.approval_time >= #{pageReqVO.approveRange[0]}
+                </if>
+                <if test="pageReqVO.approveRange.size() > 1 and pageReqVO.approveRange[1] != null">
+                    and combined.approval_time &lt;= #{pageReqVO.approveRange[1]}
+                </if>
+            </if>
+            <if test="pageReqVO.approvalStatus != null and pageReqVO.approvalStatus != ''">
+                AND combined.approval_status LIKE CONCAT('%', #{pageReqVO.approvalStatus}, '%')
+            </if>
+            <if test="pageReqVO.remark != null and pageReqVO.remark != ''">
+                AND combined.remark LIKE CONCAT('%', #{pageReqVO.remark}, '%')
+            </if>
+
+        </where>
+
+    </select>
+
+
+    <!-- 车头条件 -->
+    <sql id="deptConditiont1">
+        <if test="pageReqVO.deptId != null">
+            AND t1.dept_id = #{pageReqVO.deptId}
+        </if>
+        <if test="pageReqVO.creatorId != null">
+            AND t1.creator = #{pageReqVO.creatorId}
+        </if>
+    </sql>
+
+    <!-- 车挂条件 -->
+    <sql id="deptConditiont2">
+        <if test="pageReqVO.deptId != null">
+            AND t2.dept_id = #{pageReqVO.deptId}
+        </if>
+        <if test="pageReqVO.creatorId != null">
+            AND t2.creator = #{pageReqVO.creatorId}
+        </if>
+    </sql>
+
+    <!-- 主车的状态条件 -->
+    <sql id="statusConditionMainVehicle">
+        <if test="pageReqVO.statusType != null">
+            <choose>
+                <when test="pageReqVO.statusType == 1"> <!-- 使用中 -->
+                    AND t1.is_idle = 0
+                </when>
+                <when test="pageReqVO.statusType == 2"> <!-- 空闲 -->
+                    AND t1.is_idle = 1
+                </when>
+                <when test="pageReqVO.statusType == 3"> <!-- 注销 -->
+                    AND t1.status = 0
+                </when>
+                <when test="pageReqVO.statusType == 4"> <!-- 报废 -->
+                    AND t1.status = 1
+                </when>
+            </choose>
+        </if>
+    </sql>
+
+    <!-- 挂车的状态条件 -->
+    <sql id="statusConditionTrailer">
+        <if test="pageReqVO.statusType != null">
+            <choose>
+                <when test="pageReqVO.statusType == 1"> <!-- 使用中 -->
+                    AND t2.is_idle = 0
+                </when>
+                <when test="pageReqVO.statusType == 2"> <!-- 空闲 -->
+                    AND t2.is_idle = 1
+                </when>
+                <when test="pageReqVO.statusType == 3"> <!-- 注销 -->
+                    AND t2.status = 0
+                </when>
+                <when test="pageReqVO.statusType == 4"> <!-- 报废 -->
+                    AND t2.status = 1
+                </when>
+            </choose>
+        </if>
+    </sql>
+
+
+
+
+    <select id="selectCarByVehicleId"
+            resultType="com.fmyd888.fengmao.module.information.dal.dataobject.car.CarDO">
+            SELECT id, deputy_id, escort_id, main_vehicle_id, trailer_id, captain_id, main_id, fleet_id
+            FROM fm_car
+            WHERE main_vehicle_id = #{vehicleId}
+              AND deleted = 0
+              AND tenant_id = 1
+    </select>
+    <select id="selectDingCarDetailsById"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.car.dto.DingCarDetailsRespDTO">
+        SELECT
+        t1.id,
+        t2.name AS deptName, -- 所属公司
+        t3.plate_number AS plateNumber, -- 车牌号
+        CASE WHEN t1.old_trailer_id IS NULL THEN t4.vehicle_trailer_no ELSE t12.vehicle_trailer_no END AS vehicleTrailerNo, -- 挂车号
+        t4.parking_position, -- 停放位置
+        CASE WHEN t1.old_fleet_id IS NULL THEN t5.name ELSE t11.name END AS fleetName, -- 车队
+        t6.nickname AS captainNickname, -- 车队长
+        t7.nickname AS mainDriverNickname, -- 主驾
+        t8.nickname AS deputyDriverNickname, -- 副驾
+        t9.nickname AS escortNickname, -- 押运员
+        t1.approval_time, -- 申请时间
+        t10.nickname AS applyUserName, -- 申请人
+        t5.name AS oldFleetName, -- 申请人
+        t4.vehicle_trailer_no AS oldVehicleTrailerNo, -- 申请人
+        t1.replace_time,
+        t1.apply_user_time,
+        t1.remark
+        FROM fm_car_person_replace t1
+        LEFT JOIN system_dept t2 ON t2.id = t1.dept_id AND (t2.deleted = 0 OR t2.deleted IS NULL) -- 所属公司
+        LEFT JOIN fm_main_vehicle t3 ON t3.id = t1.car_id AND (t3.deleted = 0 OR t3.deleted IS NULL) -- 车牌号
+        LEFT JOIN fm_trailer t4 ON t4.id = t1.trailer_id AND (t4.deleted = 0 OR t4.deleted IS NULL) -- 挂车号
+        LEFT JOIN fm_fleet t5 ON t5.id = t1.fleet_id AND (t5.deleted = 0 OR t5.deleted IS NULL) -- 车队
+        LEFT JOIN system_users t6 ON t6.id = t5.captain_id AND (t6.deleted = 0 OR t6.deleted IS NULL) -- 车队长
+        LEFT JOIN system_users t7 ON t7.id = t1.main_id AND (t7.deleted = 0 OR t7.deleted IS NULL) -- 主驾
+        LEFT JOIN system_users t8 ON t8.id = t1.deputy_id AND (t8.deleted = 0 OR t8.deleted IS NULL) -- 副驾
+        LEFT JOIN system_users t9 ON t9.id = t1.escort_id AND (t9.deleted = 0 OR t9.deleted IS NULL) -- 押运员
+        LEFT JOIN system_users t10 ON t10.id = t1.apply_user_id AND (t10.deleted = 0 OR t10.deleted IS NULL) -- 申请人
+        LEFT JOIN fm_fleet t11 ON t11.id = t1.old_fleet_id AND (t11.deleted = 0 OR t11.deleted IS NULL) -- 前车队
+        LEFT JOIN fm_trailer t12 ON t12.id = t1.old_trailer_id AND (t12.deleted = 0 OR t12.deleted IS NULL) -- 前车挂
+        WHERE t1.id = #{id}
+        AND t1.deleted = 0
+        AND t1.replace_type = 2
+        AND (t2.deleted = 0 OR t2.deleted IS NULL)
+        AND (t3.deleted = 0 OR t3.deleted IS NULL)
+        AND (t4.deleted = 0 OR t4.deleted IS NULL)
+        AND (t5.deleted = 0 OR t5.deleted IS NULL)
+        AND (t6.deleted = 0 OR t6.deleted IS NULL)
+        AND (t7.deleted = 0 OR t7.deleted IS NULL)
+        AND (t8.deleted = 0 OR t8.deleted IS NULL)
+        AND (t9.deleted = 0 OR t9.deleted IS NULL)
+        AND (t10.deleted = 0 OR t10.deleted IS NULL)
+        AND (t11.deleted = 0 OR t11.deleted IS NULL)
+        AND (t12.deleted = 0 OR t12.deleted IS NULL)
+    </select>
+    <select id="selectCarChangeById"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.car.dto.CarChangeRespDTO">
+        SELECT
+            t1.replace_time,
+            t1.remark,
+            t1.apply_user_time,
+            t2.name AS deptName,
+            t3.plate_number,
+            t4.id,
+            t5.name AS fleetName,
+            t6.nickname AS applyUserName,
+            CASE WHEN t1.old_main_id IS NULL THEN t10.nickname ELSE t7.nickname END AS mainName,
+            CASE WHEN t1.old_deputy_id IS NULL THEN t11.nickname ELSE t8.nickname END AS deputyName,
+            CASE WHEN t1.old_escort_id IS NULL THEN t12.nickname ELSE t9.nickname END AS escortName,
+            t10.nickname AS newMainName,
+            t11.nickname AS newDeputyName,
+            t12.nickname AS newEscortName,
+            t13.nickname AS captainName
+        FROM
+            fm_car_person_replace t1
+                LEFT JOIN system_dept t2 ON t2.id = t1.dept_id AND t2.tenant_id = 1
+                LEFT JOIN fm_main_vehicle t3 ON t3.id = t1.car_id AND t3.tenant_id = 1
+                LEFT JOIN fm_car t4 ON t4.main_vehicle_id = t3.id AND t4.tenant_id = 1
+                LEFT JOIN fm_fleet t5 ON t5.id = t4.fleet_id AND t5.tenant_id = 1
+                LEFT JOIN system_users t13 ON t13.id = t5.captain_id AND t13.tenant_id = 1
+                LEFT JOIN system_users t6 ON t6.id = t1.apply_user_id AND t6.tenant_id = 1
+                LEFT JOIN system_users t7 ON t7.id = t1.old_main_id AND t7.tenant_id = 1
+                LEFT JOIN system_users t8 ON t8.id = t1.old_deputy_id AND t8.tenant_id = 1
+                LEFT JOIN system_users t9 ON t9.id = t1.old_escort_id AND t9.tenant_id = 1
+                LEFT JOIN system_users t10 ON t10.id = t1.main_id AND t10.tenant_id = 1
+                LEFT JOIN system_users t11 ON t11.id = t1.deputy_id AND t11.tenant_id = 1
+                LEFT JOIN system_users t12 ON t12.id = t1.escort_id AND t12.tenant_id = 1
+        WHERE
+            t1.id = #{id}
+          AND t1.deleted = 0
+          AND (t2.deleted = 0 OR t2.deleted IS NULL)
+          AND (t3.deleted = 0 OR t3.deleted IS NULL)
+          AND (t4.deleted = 0 OR t4.deleted IS NULL)
+          AND (t5.deleted = 0 OR t5.deleted IS NULL)
+          AND (t6.deleted = 0 OR t6.deleted IS NULL)
+          AND (t7.deleted = 0 OR t7.deleted IS NULL)
+          AND (t8.deleted = 0 OR t8.deleted IS NULL)
+          AND (t9.deleted = 0 OR t9.deleted IS NULL)
+          AND (t10.deleted = 0 OR t10.deleted IS NULL)
+          AND (t11.deleted = 0 OR t11.deleted IS NULL)
+          AND (t12.deleted = 0 OR t12.deleted IS NULL)
+          AND (t13.deleted = 0 OR t13.deleted IS NULL)
+    </select>
+    <select id="selectCarChangeByVehicleId"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.car.dto.CarChangeRespDTO">
+        SELECT
+            t1.id,
+            t1.replace_time,
+            t1.remark,
+            t1.status,
+            t2.plate_number,
+            t3.name AS fleetName,
+            t4.name AS oldFleetName,
+            t5.vehicle_trailer_no AS trailerName,
+            t13.vehicle_trailer_no AS oldTrailerName,
+            t6.nickname AS mainName,
+            t7.nickname AS oldMainName,
+            t8.nickname AS deputyName,
+            t9.nickname AS oldDeputyName,
+            t10.nickname AS escortName,
+            t11.nickname AS oldEscortName,
+            t12.nickname AS applyUserName
+        FROM fm_car_person_replace t1
+                 LEFT JOIN fm_main_vehicle t2 ON t2.id = t1.car_id
+                 LEFT JOIN fm_fleet t3 ON t3.id = t1.fleet_id
+                 LEFT JOIN fm_fleet t4 ON t4.id = t1.old_fleet_id
+                 LEFT JOIN fm_trailer t5 ON t5.id = t1.trailer_id
+                 LEFT JOIN fm_trailer t13 ON t13.id = t1.old_trailer_id
+                 LEFT JOIN system_users t6 ON t6.id = t1.main_id
+                 LEFT JOIN system_users t7 ON t7.id = t1.old_main_id
+                 LEFT JOIN system_users t8 ON t8.id = t1.deputy_id
+                 LEFT JOIN system_users t9 ON t9.id = t1.old_deputy_id
+                 LEFT JOIN system_users t10 ON t10.id = t1.escort_id
+                 LEFT JOIN system_users t11 ON t11.id = t1.old_escort_id
+                 LEFT JOIN system_users t12 ON t12.id = t1.apply_user_id
+        WHERE
+            <if test="pageReqVO.vehicleId != null">
+                 t1.car_id = #{pageReqVO.vehicleId}
+            </if>
+            <if test="pageReqVO.replaceType != null">
+                and t1.replace_type = #{pageReqVO.replaceType}
+            </if>
+          AND t1.deleted = 0
+          AND (t2.deleted = 0 OR t2.deleted IS NULL)
+          AND (t3.deleted = 0 OR t3.deleted IS NULL)
+          AND (t4.deleted = 0 OR t4.deleted IS NULL)
+          AND (t5.deleted = 0 OR t5.deleted IS NULL)
+          AND (t6.deleted = 0 OR t6.deleted IS NULL)
+          AND (t7.deleted = 0 OR t7.deleted IS NULL)
+          AND (t8.deleted = 0 OR t8.deleted IS NULL)
+          AND (t9.deleted = 0 OR t9.deleted IS NULL)
+          AND (t10.deleted = 0 OR t10.deleted IS NULL)
+          AND (t11.deleted = 0 OR t11.deleted IS NULL)
+          AND (t12.deleted = 0 OR t12.deleted IS NULL)
+          AND (t13.deleted = 0 OR t13.deleted IS NULL)
+    </select>
+
+    <select id="countInUse" resultType="java.lang.Integer">
+        SELECT
+        CASE
+        WHEN #{vehicleType} = 1 THEN
+        (SELECT COUNT(*) FROM fm_main_vehicle t1
+        WHERE t1.deleted = 0 AND t1.is_idle = 0
+        <if test="deptId != null">
+            AND t1.dept_id = #{deptId}
+        </if>)
+        WHEN #{vehicleType} = 2 THEN
+        (SELECT COUNT(*) FROM fm_trailer t2
+        WHERE t2.deleted = 0 AND t2.is_idle = 0
+        <if test="deptId != null">
+            AND t2.dept_id = #{deptId}
+        </if>)
+        ELSE
+        (SELECT COUNT(*) FROM fm_main_vehicle t1
+        WHERE t1.deleted = 0 AND t1.is_idle = 0
+        <if test="deptId != null">
+            AND t1.dept_id = #{deptId}
+        </if>) +
+        (SELECT COUNT(*) FROM fm_trailer t2
+        WHERE t2.deleted = 0 AND t2.is_idle = 0
+        <if test="deptId != null">
+            AND t2.dept_id = #{deptId}
+        </if>)
+        END AS totalCount
+    </select>
+
+    <select id="countIdle" resultType="java.lang.Integer">
+        SELECT
+        CASE
+        WHEN #{vehicleType} = 1 THEN
+        (SELECT COUNT(*) FROM fm_main_vehicle t1
+        WHERE t1.deleted = 0 AND t1.is_idle = 1
+        <if test="deptId != null">
+            AND t1.dept_id = #{deptId}
+        </if>)
+        WHEN #{vehicleType} = 2 THEN
+        (SELECT COUNT(*) FROM fm_trailer t2
+        WHERE t2.deleted = 0 AND t2.is_idle = 1
+        <if test="deptId != null">
+            AND t2.dept_id = #{deptId}
+        </if>)
+        ELSE
+        (SELECT COUNT(*) FROM fm_main_vehicle t1
+        WHERE t1.deleted = 0 AND t1.is_idle = 1
+        <if test="deptId != null">
+            AND t1.dept_id = #{deptId}
+        </if>) +
+        (SELECT COUNT(*) FROM fm_trailer t2
+        WHERE t2.deleted = 0 AND t2.is_idle = 1
+        <if test="deptId != null">
+            AND t2.dept_id = #{deptId}
+        </if>)
+        END AS totalCount
+    </select>
+
+    <select id="countDeactivated" resultType="java.lang.Integer">
+        SELECT
+        CASE
+        WHEN #{vehicleType} = 1 THEN
+        (SELECT COUNT(*) FROM fm_main_vehicle t1
+        WHERE t1.deleted = 0 AND t1.status = 0
+        <if test="deptId != null">
+            AND t1.dept_id = #{deptId}
+        </if>)
+        WHEN #{vehicleType} = 2 THEN
+        (SELECT COUNT(*) FROM fm_trailer t2
+        WHERE t2.deleted = 0 AND t2.status = 0
+        <if test="deptId != null">
+            AND t2.dept_id = #{deptId}
+        </if>)
+        ELSE
+        (SELECT COUNT(*) FROM fm_main_vehicle t1
+        WHERE t1.deleted = 0 AND t1.status = 0
+        <if test="deptId != null">
+            AND t1.dept_id = #{deptId}
+        </if>) +
+        (SELECT COUNT(*) FROM fm_trailer t2
+        WHERE t2.deleted = 0 AND t2.status = 0
+        <if test="deptId != null">
+            AND t2.dept_id = #{deptId}
+        </if>)
+        END AS totalCount
+    </select>
+
+    <select id="countScrapped" resultType="java.lang.Integer">
+        SELECT
+        CASE
+        WHEN #{vehicleType} = 1 THEN
+        (SELECT COUNT(*) FROM fm_main_vehicle t1
+        WHERE t1.deleted = 0 AND t1.status = 1
+        <if test="deptId != null">
+            AND t1.dept_id = #{deptId}
+        </if>)
+        WHEN #{vehicleType} = 2 THEN
+        (SELECT COUNT(*) FROM fm_trailer t2
+        WHERE t2.deleted = 0 AND t2.status = 1
+        <if test="deptId != null">
+            AND t2.dept_id = #{deptId}
+        </if>)
+        ELSE
+        (SELECT COUNT(*) FROM fm_main_vehicle t1
+        WHERE t1.deleted = 0 AND t1.status = 1
+        <if test="deptId != null">
+            AND t1.dept_id = #{deptId}
+        </if>) +
+        (SELECT COUNT(*) FROM fm_trailer t2
+        WHERE t2.deleted = 0 AND t2.status = 1
+        <if test="deptId != null">
+            AND t2.dept_id = #{deptId}
+        </if>)
+        END AS totalCount
+    </select>
+
+    <select id="exportList" resultType="com.fmyd888.fengmao.module.information.controller.admin.car.vo.CarExcelVO">
+        SELECT
+            CASE t1.status
+                WHEN 0 THEN '启用'
+                WHEN 1 THEN '禁用'
+                END AS status,
+            CASE t1.god_type
+                WHEN 1 THEN '危货'
+                WHEN 2 THEN '普货'
+                WHEN 3 THEN '普危对流'
+                END AS god_type, -- 货物类型
+--     t2.id AS mainVehicleId,
+--     t3.id AS trailerId,
+            t2.plate_number AS mainVehicleName, -- 主车牌号
+            t3.vehicle_trailer_no AS trailerName, -- 挂车牌号
+            t12.name as companyName,-- 所属公司
+            t5.name AS fleetName, -- 车队名称
+            t2.vehicle_brand,
+            -- 计算车头使用年限
+            CASE
+                WHEN DATEDIFF(YEAR, t2.register_time, GETDATE()) >= 1 THEN
+                    DATEDIFF(YEAR, t2.register_time, GETDATE())
+                ELSE 0
+                END AS userYears,
+            -- 计算挂车使用年限
+            CASE
+                WHEN DATEDIFF(YEAR, t3.certificat_time, GETDATE()) >= 1 THEN
+                    DATEDIFF(YEAR, t3.certificat_time, GETDATE())
+                ELSE 0
+                END AS tUserYears,
+            t3.verificationmass, -- 可用吨位
+            t1.actual_tonnage, -- 实际吨位
+            t2.front_weight, -- 车头重量
+            t3.trailer_weight, -- 挂车重量
+            CASE t3.tank_type
+                WHEN 1 THEN '不锈钢罐'
+                WHEN 2 THEN '仓栏挂'
+                WHEN 3 THEN '昌骅牌碳钢罐'
+                WHEN 4 THEN '衬塑罐'
+                WHEN 5 THEN '宏泰牌碳钢罐'
+                END AS tank_type, -- 罐类型
+            t8.nickname AS captainName, -- 车队长昵称
+            t8.mobile AS captainPhone, -- 车队长电话
+            t9.nickname AS mainName, -- 主驾驶昵称
+            t9.mobile AS mainPhone, -- 主驾驶电话
+            t10.nickname AS deputyName, -- 副驾驶昵称
+            t10.mobile AS deputyPhone, -- 副驾驶电话
+            t11.nickname AS escortName, -- 押运员昵称
+            t11.mobile AS escortPhone, -- 押运员电话
+            t2.register_time, -- 车头注册时间
+            t3.certificat_time, -- 挂车认证时间
+            t13.cert_no as mainCertNo,
+            t14.cert_no as deputyCertNo,
+            t15.cert_no as escortCertNo,
+            t1.create_time-- 创建时间
+
+        FROM fm_car t1
+                 JOIN fm_main_vehicle t2 ON t1.main_vehicle_id = t2.id AND t2.deleted = 0
+                 LEFT JOIN fm_trailer t3 ON t1.trailer_id = t3.id AND t3.deleted = 0
+                 LEFT JOIN fm_fleet t5 ON t5.id = t1.fleet_id AND t5.deleted = 0
+                 LEFT JOIN system_users t8 ON t8.id = t1.captain_id AND t8.deleted = 0 -- 车队长
+                 LEFT JOIN system_users t9 ON t9.id = t1.main_id AND t9.deleted = 0 -- 主驾驶
+                 LEFT JOIN system_users t10 ON t10.id = t1.deputy_id AND t10.deleted = 0 -- 副驾驶
+                 LEFT JOIN system_users t11 ON t11.id = t1.escort_id AND t11.deleted = 0 -- 押运员
+                 LEFT JOIN system_dept t12 ON t12.id = t1.company_id AND t12.deleted = 0 -- 押运员
+                 left JOIN fm_roster t13 ON t1.main_id = t13.id and t13.deleted = 0
+                 left JOIN fm_roster t14 ON t1.deputy_id = t14.id and t14.deleted = 0
+                 left JOIN fm_roster t15 ON t1.escort_id = t15.id and t15.deleted = 0
+        WHERE t1.deleted = 0;
+
+
+    </select>
+    <select id="exportCheckData" resultType="com.fmyd888.fengmao.module.information.controller.admin.car.vo.CarRespVO">
+        SELECT
+            t1.id,
+            t2.plate_number mainVehicleName,
+            t3.vehicle_trailer_no as trailerName,
+            t5.nickname as mainName,
+            t6.nickname as deputyName,
+            t7.nickname as escortName
+        FROM fm_car t1
+                 JOIN fm_main_vehicle t2 ON t1.main_vehicle_id = t2.id and t2.deleted = 0
+                 left JOIN fm_trailer t3 ON t1.trailer_id = t3.id and t3.deleted = 0
+                 left JOIN system_users t5 ON t1.main_id = t5.id and t5.deleted = 0
+                 left JOIN system_users t6 ON t1.deputy_id = t6.id and t6.deleted = 0
+                 left JOIN system_users t7 ON t1.escort_id = t7.id and t7.deleted = 0
+        WHERE t1.deleted = 0
+    </select>
+</mapper>

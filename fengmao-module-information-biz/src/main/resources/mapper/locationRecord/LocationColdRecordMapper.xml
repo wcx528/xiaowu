@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fmyd888.fengmao.module.information.dal.mysql.locationRecord.LocationColdRecordMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+     -->
+    <insert id="batchInsertX" parameterType="list">
+        INSERT INTO fm_location_cold_record
+        ( car_id, longitude, latitude, address, total_mileage, speed, creator, create_time, updater, update_time,
+        deleted, dept_id, drct )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            ( #{item.carId} , #{item.longitude} , #{item.latitude} , #{item.address} , #{item.totalMileage} ,
+            #{item.speed} , #{item.creator} , GETDATE() , #{item.updater} , GETDATE() , 0 , #{item.deptId} ,
+            #{item.drct} )
+        </foreach>
+    </insert>
+
+    <insert id="batchBack" parameterType="list">
+        INSERT INTO fm_location_cold_record
+        ( car_id, longitude, latitude, address, total_mileage, speed, creator, create_time, updater, update_time,
+        deleted, dept_id, drct,tenant_id )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            ( #{item.carId} , #{item.longitude} , #{item.latitude} , #{item.address} , #{item.totalMileage} ,
+            #{item.speed} , #{item.creator} , #{item.createTime} , #{item.updater} , #{item.updateTime} , #{item.deleted} , #{item.deptId} ,
+            #{item.drct}, #{item.tenantId} )
+        </foreach>
+    </insert>
+</mapper>

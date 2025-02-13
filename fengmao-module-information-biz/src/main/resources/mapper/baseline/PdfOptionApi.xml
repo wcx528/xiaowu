@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fmyd888.fengmao.module.information.dal.mysql.baseline.BaselineMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+     -->
+    <select id="selectByPage" resultType="com.fmyd888.fengmao.module.information.dal.dataobject.baseline.BaselineDO">
+        select * from fm_baseline
+        <where>
+            deleted = 0
+            <if test="pageReqVO.loadingManufacturerId != null">
+                and loading_manufacturer_id = #{pageReqVO.loadingManufacturerId}
+            </if>
+            <!--  自己补充其他条件  -->
+        </where>
+
+    </select>
+    <select id="selectValidBaseline" resultType="java.lang.Integer">
+        SELECT t.id
+        FROM fm_baseline t
+        LEFT JOIN fm_baseline_medium t1 ON t1.entity_id = t.id
+        WHERE t.deleted = 0
+        AND t1.commodity_id IN
+        <foreach item="item" index="index" collection="reqVo.baselineMediumIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        AND t.loading_address_id = #{reqVo.loadingAddressId}
+        AND t.unloading_address_id = #{reqVo.unloadingAddressId}
+        AND t.settlement_id = #{reqVo.settlementId}
+        AND (t.start_time &lt;= #{reqVo.startTime} AND #{reqVo.startTime} &lt;=t.end_time)
+        AND (#{reqVo.endTime} >= t.start_time AND t.end_time >= #{reqVo.endTime})
+        <if test="reqVo.id != null">
+            AND t.id != #{reqVo.id}
+        </if>
+    </select>
+</mapper>

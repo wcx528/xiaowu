@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fmyd888.fengmao.module.information.dal.mysql.address.AddressMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+
+    <select id="getLoadingCustomerAndAddress"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.address.vo.AddressRespVO">
+        select a.full_address
+        from fm_customer_address ca
+        join fm_customer c on c.id=ca.customer_id
+        join fm_address a  on a.id=ca.address_id
+        where c.customer_name like CONCAT('%',#{customerName},'%')
+        AND ca.customer_address_type = 2
+    </select>
+
+    <select id="getUnloadCustomerAndAddress"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.address.vo.AddressRespVO">
+        select a.full_address
+        from fm_customer_address ca
+                 join fm_customer c on c.id=ca.customer_id
+                 join fm_address a  on a.id=ca.address_id
+        where c.customer_name like CONCAT('%',#{customerName},'%')
+        AND ca.customer_address_type = 1
+    </select>
+
+    <select id="getAddressByCustomerId"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.address.dto.AddressByCustomerIdDTO">
+        SELECT a.full_address,a.id
+        FROM fm_address a
+                 JOIN fm_customer_address ca ON a.id = ca.address_id
+        WHERE ca.customer_id = #{customerId}
+        and a.deleted = 0
+    </select>
+
+    <select id="selectPageByKeyword"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.address.vo.AddressRespVO">
+        SELECT
+        t1.id,
+        t1.province,
+        t1.city,
+        t1.district,
+        t1.street,
+        t1.detailed_address,
+        t1.full_address,
+        t1.address_abbreviation,
+        t1.status,
+        t1.create_time,
+        t1.update_time,
+        t4.nickname as creator,
+        t5.nickname as updater,
+        t1.dept_id,
+        t6.name as dept_name,
+        t1.address_code,
+        t1.latitude,
+        t1.longitude
+        FROM fm_address t1
+        left join system_users t4 on t4.id = t1.creator
+        left join system_users t5 on t5.id = t1.updater
+        left join system_dept t6 on t6.id = t1.dept_id
+        where t1.deleted = 0
+        <if test="pageReqVO.keyword != null and pageReqVO.keyword != ''">
+            AND (
+            t1.province LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.city LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.city LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.district LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.street LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.detailed_address LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.full_address LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.address_abbreviation LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.status LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.address_code LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.latitude LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.longitude LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            <!-- 可以继续添加其他字段的模糊查询 -->
+            )
+        </if>
+        <if test="pageReqVO.deptId != null">
+            AND t1.dept_id = #{pageReqVO.deptId}
+        </if>
+        <if test="pageReqVO.customerId != null">
+            AND exists(select id from fm_customer_address ca where ca.customer_id = #{pageReqVO.customerId} and
+            ca.address_id = t1.id and deleted = 0)
+        </if>
+<!--        <if test="pageReqVO.addressType != null">-->
+<!--            AND t1.address_type = #{pageReqVO.addressType}-->
+<!--        </if>-->
+        <if test="pageReqVO.province != null and pageReqVO.province != ''">
+            AND t1.province like concat('%',#{pageReqVO.province},'%')
+        </if>
+        <if test="pageReqVO.city != null and pageReqVO.city != ''">
+            AND t1.city like concat('%',#{pageReqVO.city},'%')
+        </if>
+        <if test="pageReqVO.district != null and pageReqVO.district != ''">
+            AND t1.district like concat('%',#{pageReqVO.district},'%')
+        </if>
+        <if test="pageReqVO.street != null and pageReqVO.street != ''">
+            AND t1.street like concat('%',#{pageReqVO.street},'%')
+        </if>
+        <if test="pageReqVO.detailedAddress != null and pageReqVO.detailedAddress != ''">
+            AND t1.detailed_address like concat('%',#{pageReqVO.detailedAddress},'%')
+        </if>
+        <if test="pageReqVO.createTime != null and pageReqVO.createTime.size() > 0">
+            and t1.create_time BETWEEN
+            <foreach collection="pageReqVO.createTime" item="createTime" separator=" AND ">
+                #{createTime}
+            </foreach>
+        </if>
+        <if test="pageReqVO.status != null">
+            AND t1.status = #{pageReqVO.status}
+        </if>
+        <if test="pageReqVO.addressAbbreviation != null and pageReqVO.addressAbbreviation != ''">
+            AND t1.address_abbreviation = #{pageReqVO.addressAbbreviation}
+        </if>
+        ORDER BY t1.create_time DESC
+    </select>
+
+    <select id="selectExportList"
+            resultType="com.fmyd888.fengmao.module.information.controller.admin.address.vo.AddressExcelVO">
+        SELECT
+        t1.id,
+        t1.province,
+        t1.city,
+        t1.district,
+        t1.street,
+        t1.detailed_address,
+        t1.full_address,
+        t1.address_abbreviation,
+        t1.status,
+        t1.create_time,
+        t1.update_time,
+        t4.nickname as creator,
+        t5.nickname as updater,
+        t1.dept_id,
+        t6.name as dept_name,
+        t1.address_code,
+        t1.latitude,
+        t1.longitude
+        FROM fm_address t1
+        left join system_users t4 on t4.id = t1.creator
+        left join system_users t5 on t5.id = t1.updater
+        left join system_dept t6 on t6.id = t1.dept_id
+        where t1.deleted = 0
+        <if test="pageReqVO.keyword != null and pageReqVO.keyword != ''">
+            AND (
+            t1.province LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.city LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.city LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.district LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.street LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.detailed_address LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.full_address LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.address_abbreviation LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.status LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.address_code LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.latitude LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            OR t1.longitude LIKE CONCAT('%', #{pageReqVO.keyword}, '%')
+            <!-- 可以继续添加其他字段的模糊查询 -->
+            )
+        </if>
+        <if test="pageReqVO.deptId != null">
+            AND t1.dept_id = #{pageReqVO.deptId}
+        </if>
+        <if test="pageReqVO.customerId != null">
+            AND exists(select id from fm_customer_address ca where ca.customer_id = #{pageReqVO.customerId} and
+            ca.address_id = t1.id and deleted = 0)
+        </if>
+        <!--        <if test="pageReqVO.addressType != null">-->
+        <!--            AND t1.address_type = #{pageReqVO.addressType}-->
+        <!--        </if>-->
+        <if test="pageReqVO.province != null and pageReqVO.province != ''">
+            AND t1.province like concat('%',#{pageReqVO.province},'%')
+        </if>
+        <if test="pageReqVO.city != null and pageReqVO.city != ''">
+            AND t1.city like concat('%',#{pageReqVO.city},'%')
+        </if>
+        <if test="pageReqVO.district != null and pageReqVO.district != ''">
+            AND t1.district like concat('%',#{pageReqVO.district},'%')
+        </if>
+        <if test="pageReqVO.street != null and pageReqVO.street != ''">
+            AND t1.street like concat('%',#{pageReqVO.street},'%')
+        </if>
+        <if test="pageReqVO.detailedAddress != null and pageReqVO.detailedAddress != ''">
+            AND t1.detailed_address like concat('%',#{pageReqVO.detailedAddress},'%')
+        </if>
+        <if test="pageReqVO.createTime != null and pageReqVO.createTime.size() > 0">
+            and t1.create_time BETWEEN
+            <foreach collection="pageReqVO.createTime" item="createTime" separator=" AND ">
+                #{createTime}
+            </foreach>
+        </if>
+        <if test="pageReqVO.status != null">
+            AND t1.status = #{pageReqVO.status}
+        </if>
+        <if test="pageReqVO.addressAbbreviation != null and pageReqVO.addressAbbreviation != ''">
+            AND t1.address_abbreviation = #{pageReqVO.addressAbbreviation}
+        </if>
+        ORDER BY t1.create_time DESC
+    </select>
+
+    <select id="selectAddressNameDetailsMap" resultType="com.fmyd888.fengmao.module.information.dal.dataobject.customer.CustomerDO">
+        SELECT DISTINCT t1.id, t1.customer_name,t1.customer_type
+        FROM fm_customer t1
+                 LEFT JOIN fm_customer_address t2 ON t1.id = t2.customer_id
+        WHERE t1.deleted = 0 AND t2.deleted = 0
+    </select>
+
+    <select id="selectAddressListByCustomerIds" resultMap="AddressRespDTOResultMap">
+        SELECT
+        t1.id AS customerId,
+        t3.id AS addressId,
+        t3.full_address AS fullAddress
+        FROM fm_customer t1
+        LEFT JOIN fm_customer_address t2 ON t1.id = t2.customer_id AND t2.deleted = 0
+        LEFT JOIN fm_address t3 ON t3.id = t2.address_id AND t3.deleted = 0
+        WHERE t1.deleted = 0
+        AND t1.id IN
+        <foreach item="customerId" collection="customerIds" open="(" separator="," close=")">
+            #{customerId}
+        </foreach>
+    </select>
+
+
+    <resultMap id="AddressRespDTOResultMap" type="com.fmyd888.fengmao.module.information.controller.admin.address.dto.AddressRespDTO">
+        <id property="addressId" column="addressId"/>
+        <result property="fullAddress" column="fullAddress"/>
+    </resultMap>
+
+    <select id="selectCustomerIdsByCustomerAddress" resultType="java.lang.Long">
+        SELECT DISTINCT
+            t2.customer_id
+        FROM fm_customer t1
+             LEFT JOIN fm_customer_address t2 on t2.customer_id = t1.id AND t2.deleted = 0
+             LEFT JOIN fm_address t3 on t3.id = t2.address_id AND t2.deleted = 0
+        WHERE t1.deleted = 0
+          AND t2.customer_id IS NOT NULL
+    </select>
+</mapper>

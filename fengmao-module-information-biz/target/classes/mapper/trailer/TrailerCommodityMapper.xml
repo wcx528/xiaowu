@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fmyd888.fengmao.module.information.dal.mysql.trailer.TrailerCommodityMapper">
+
+    <insert id="insertBatchX">
+        INSERT INTO fm_trailer_commodity ( entity_id, commodity_id)
+        VALUES
+        <foreach collection="commodityIds" item="commodityId" separator=",">
+            ( #{trailerId},#{commodityId})
+        </foreach>
+    </insert>
+    <insert id="insertTrailerCommodityBatch">
+        INSERT INTO fm_trailer_commodity ( entity_id, commodity_id)
+        VALUES
+        <foreach collection="commodityIds" item="commodityId" separator=",">
+            (#{trailerId}, #{commodityId})
+        </foreach>
+    </insert>
+    <update id="deleteTrailerCommodityBatch">
+        UPDATE fm_trailer_commodity
+        SET deleted = 1
+        WHERE entity_id = #{trailerId}
+        AND commodity_id IN
+        <foreach collection="commodityIds" item="commodityId" open="(" separator="," close=")">
+            #{commodityId}
+        </foreach>
+    </update>
+</mapper>

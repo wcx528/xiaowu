@@ -1,0 +1,84 @@
+{
+  "groups": [
+    {
+      "name": "fengmao.gaode",
+      "type": "com.fmyd888.fengmao.module.information.framework.location.config.GoDeProperties",
+      "sourceType": "com.fmyd888.fengmao.module.information.framework.location.config.GoDeProperties"
+    },
+    {
+      "name": "fengmao.gps",
+      "type": "com.fmyd888.fengmao.module.information.framework.location.config.LocationProperties",
+      "sourceType": "com.fmyd888.fengmao.module.information.framework.location.config.LocationProperties"
+    },
+    {
+      "name": "fengmao.qcc",
+      "type": "com.fmyd888.fengmao.module.information.properties.QCCProperties",
+      "sourceType": "com.fmyd888.fengmao.module.information.properties.QCCProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "fengmao.gaode.convert-url",
+      "type": "java.lang.String",
+      "description": "转高德地图坐标接口地址",
+      "sourceType": "com.fmyd888.fengmao.module.information.framework.location.config.GoDeProperties"
+    },
+    {
+      "name": "fengmao.gaode.driving-url",
+      "type": "java.lang.String",
+      "description": "汽车路径规划接口地址",
+      "sourceType": "com.fmyd888.fengmao.module.information.framework.location.config.GoDeProperties"
+    },
+    {
+      "name": "fengmao.gaode.key",
+      "type": "java.lang.String",
+      "description": "应用key标识",
+      "sourceType": "com.fmyd888.fengmao.module.information.framework.location.config.GoDeProperties"
+    },
+    {
+      "name": "fengmao.gaode.secret",
+      "type": "java.lang.String",
+      "description": "秘钥",
+      "sourceType": "com.fmyd888.fengmao.module.information.framework.location.config.GoDeProperties"
+    },
+    {
+      "name": "fengmao.gps.password",
+      "type": "java.lang.String",
+      "description": "密码",
+      "sourceType": "com.fmyd888.fengmao.module.information.framework.location.config.LocationProperties"
+    },
+    {
+      "name": "fengmao.gps.url",
+      "type": "java.lang.String",
+      "description": "接口地址",
+      "sourceType": "com.fmyd888.fengmao.module.information.framework.location.config.LocationProperties"
+    },
+    {
+      "name": "fengmao.gps.user-id",
+      "type": "java.lang.String",
+      "description": "用户ID",
+      "sourceType": "com.fmyd888.fengmao.module.information.framework.location.config.LocationProperties"
+    },
+    {
+      "name": "fengmao.qcc.appkey",
+      "type": "java.lang.String",
+      "sourceType": "com.fmyd888.fengmao.module.information.properties.QCCProperties"
+    },
+    {
+      "name": "fengmao.qcc.details-path",
+      "type": "java.lang.String",
+      "sourceType": "com.fmyd888.fengmao.module.information.properties.QCCProperties"
+    },
+    {
+      "name": "fengmao.qcc.host",
+      "type": "java.lang.String",
+      "sourceType": "com.fmyd888.fengmao.module.information.properties.QCCProperties"
+    },
+    {
+      "name": "fengmao.qcc.secret-key",
+      "type": "java.lang.String",
+      "sourceType": "com.fmyd888.fengmao.module.information.properties.QCCProperties"
+    }
+  ],
+  "hints": []
+}
